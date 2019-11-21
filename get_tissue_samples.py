@@ -42,14 +42,11 @@ def main():
             continue
         attribute_info = line.rstrip().split('\t')
         # Knowing the tissue type if in column 6, idx 5
-        # Knowing the sample id is in column 1
+        # Knowing the sample id is in column 1, idx 0
         if attribute_info[5] == tissue_group:
-            output.write(attribute_info[0]+'\n')
-        else:
-            print('Tissue group not found')
-            sys.exit(1)
-        output.close()
-        sys.exit(0)
+            output.write(attribute_info[0] + '\n')
+    output.close()
+    sys.exit(0)
 
 
 if __name__ == '__main__':
