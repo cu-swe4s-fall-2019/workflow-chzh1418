@@ -63,33 +63,45 @@ def main():
     if (os.path.exists(outfile)):
         print('Outfile exits')
         sys.exit(1)
-    tissue_sample_id = []
-    for i in tissues:
-        if (not os.path.exists(i + '_samples.txt')):
-            print(i + '_samples.txt file not found')
-            sys.exit(1)
-        else:
-            for line in open(i + '_samples.txt'):
-                tissue_sample_id.append(line.rstrip().split()[0])
-        all_gene_counts = []
-        for j in genes:
-            if (not os.path.exists(j + '_counts.txt')):
-                print(j + '_counts.txt file not exit')
+    # Decide not to use box_plot function
+    else:
+        fig, axes = plt.subplots(len(tissues), 1,figsize=(20, 10))
+        q = 0
+        for i in tissues:
+            tissue_sample_id = []
+            if (not os.path.exists(i + '_samples.txt')):
+                print(i + '_samples.txt file not found')
                 sys.exit(1)
             else:
+                for line in open(i + '_samples.txt'):
+                    tissue_sample_id.append(line.rstrip().split()[0])
+            all_gene_counts = []
+            for j in genes:
                 single_gene_single_tissue = []
                 single_gene_counts = []
                 single_gene_sample_id = []
-                for line in open(j + '_counts.txt'):
-                    single_gene_counts.append(
-                        int(line.rstrip().split('\t')[1]))
-                    single_gene_sample_id.append(line.rstrip().split('\t')[0])
-            for k in tissue_sample_id:
-                for m in range(len(single_gene_sample_id)):
-                    if k == single_gene_sample_id[m]:
-                        single_gene_single_tissue.append(single_gene_counts[m])
-            all_gene_counts.append(single_gene_single_tissue)
-        box_plot(all_gene_counts, tissues, genes, outfile)
+                if (not os.path.exists(j + '_counts.txt')):
+                    print(j + '_counts.txt file not exit')
+                    sys.exit(1)
+                else:
+                    for line in open(j + '_counts.txt'):
+                        single_gene_counts.append(
+                            int(line.rstrip().split('\t')[1]))
+                        single_gene_sample_id.append(
+                            line.rstrip().split('\t')[0])
+                for k in tissue_sample_id:
+                    for m in range(len(single_gene_sample_id)):
+                        if k == single_gene_sample_id[m]:
+                            single_gene_single_tissue.append(
+                                single_gene_counts[m])
+                all_gene_counts.append(single_gene_single_tissue)
+            # print(all_gene_counts)
+            axes[q].boxplot(all_gene_counts)
+            axes[q].set_title(i)
+            axes[q].set_ylabel('Count')
+            axes[q].set_xticklabels(genes, rotation='horizontal')
+            q += 1
+        plt.savefig(outfile, bbox_inches='tight', dpi = 300)
 
 
 if __name__ == '__main__':
