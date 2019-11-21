@@ -2,7 +2,6 @@ import gzip
 import sys
 import os
 import argparse
-import matplotlib.pylab as plt
 
 
 def linear_search(key, D):
@@ -81,7 +80,7 @@ def main():
     version = None
     dim = None
     data_header = None
-    gene_counts = []
+    gene_counts = None
     output = open(out_file, 'w')
     # Get the data header and counts
     for line in gzip.open(count_file, 'rt'):
@@ -94,17 +93,18 @@ def main():
         if data_header is None:
             data_header = line.rstrip().split('\t')
             # Get the sample id column by searching for 'description'
-            description_idx = linear_search('Description', data_header)
+            description_idx = linear_search("Description", data_header)
+            if description_idx == -1:
+                print('Wrong file, not description column')
+                sys.exit(1)
             continue
-        if description_idx == -1:
-            print('Wrong file, not description column')
-            sys.exit(1)
-        gene_counts = line.rstrip().split('\t')
-        if gene_counts[description_idx] == gene_name:
-            for i in range(2, len(data_header)):
-                output.write(data_header[i] + '\t' + gene_counts[i] + '\n')
-            output.close()
-        sys.exit(0)
+        else:
+            gene_counts = line.rstrip().split('\t')
+            if gene_counts[description_idx] == gene_name:
+                for i in range(description_idx + 1, len(data_header)-1):
+                    output.write(data_header[i]+'\t'+gene_counts[i]+'\n')
+    output.close()
+    sys.exit(0)
 
 
 if __name__ == '__main__':
