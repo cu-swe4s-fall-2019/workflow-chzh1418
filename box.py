@@ -65,7 +65,7 @@ def main():
         sys.exit(1)
     # Decide not to use box_plot function
     else:
-        fig, axes = plt.subplots(len(tissues), 1)
+        fig, axes = plt.subplots(len(tissues), 1, figsize=(10, 8))
         q = 0
         for i in tissues:
             tissue_sample_id = []
@@ -101,7 +101,7 @@ def main():
             axes[q].set_ylabel('Count')
             axes[q].set_xticklabels(genes, rotation='horizontal')
             q += 1
-        plt.savefig(outfile, bbox_inches='tight', dpi=300)
+        plt.savefig(outfile, bbox_inches='tight', dpi=500)
 
 
 if __name__ == '__main__':
